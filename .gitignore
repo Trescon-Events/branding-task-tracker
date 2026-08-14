@@ -1,0 +1,6 @@
+node_modules/
+db.json
+database.sqlite
+.gemini/
+.system_generated/
+*.log

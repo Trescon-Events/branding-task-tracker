@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trescon Global - Task Sheet Studio</title>
+  <meta name="description" content="Official Trescon Global task sheet and timesheet operations studio.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anek+Devanagari:wght@400;500;600;700;800&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css?v=3.0">
+</head>
+<body class="dark-theme">
+
+  <div class="studio-app-container">
+
+    <!-- 1. TOP FIXED RIBBON BAR -->
+    <header class="studio-top-ribbon no-print">
+      <div class="header-left">
+        <img src="brand_assets/trescon-logo-white-2025.png" alt="Trescon Logo" class="brand-logo-img">
+        <div class="divider"></div>
+        <div class="document-title-block">
+          <h1 class="document-title">Task Sheet Studio</h1>
+          <span class="version-pill">v1.2 GENEROUS SPACING</span>
+        </div>
+      </div>
+
+      <!-- Active Timer Widget (Integrated into Header) -->
+      <div class="active-timer-widget" id="headerTimerWidget">
+        <div class="timer-pulse"></div>
+        <div class="timer-details">
+          <span class="timer-task-name" id="headerTimerTaskName">No active task</span>
+          <span class="timer-counter" id="headerTimerClock">00:00:00</span>
+        </div>
+        <button class="timer-btn play-pause-btn" id="headerTimerPauseBtn" title="Pause Tracker" disabled>
+          <i data-lucide="pause"></i>
+        </button>
+        <button class="timer-btn stop-btn" id="headerTimerStopBtn" title="Stop & Log Tracker" disabled>
+          <i data-lucide="square"></i>
+        </button>
+      </div>
+
+      <div class="header-right">
+        <!-- Profile Selection dropdown -->
+        <div class="user-selector-container">
+          <label for="currentUserSelect"><i data-lucide="user"></i></label>
+          <select id="currentUserSelect" class="user-select-dropdown">
+            <!-- Populated dynamically -->
+          </select>
+          <button class="add-user-btn" id="addUserProfileBtn" title="Add User Profile">
+            <i data-lucide="user-plus"></i>
+          </button>
+        </div>
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Light/Dark Mode">
+          <i data-lucide="sun"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- 2. MAIN SPLIT WORKSPACE -->
+    <div class="main-workspace">
+
+      <!-- LEFT COLUMN: CONTROLS & FILTER PANELS -->
+      <aside class="left-panel no-print">
+        
+        <!-- Section 1: User & Goal Info -->
+        <div class="panel-section">
+          <div class="section-header">
+            <i data-lucide="settings"></i>
+            <h2>Goal Settings</h2>
+          </div>
+          <div class="panel-content">
+            <div class="goal-display">
+              <span class="goal-label">Daily Target:</span>
+              <button class="btn-text-action" id="editGoalBtn">
+                <i data-lucide="edit-3"></i> Set Goal
+              </button>
+            </div>
+            <div class="goal-display-metrics">
+              <span class="goal-value-display" id="goalPercentText">0%</span>
+              <span class="goal-desc-display" id="goalProgressText">0 / 8 hours logged today</span>
+            </div>
+            <div class="goal-bar-container">
+              <div class="goal-progress-bar" id="goalProgressBar" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Filters -->
+        <div class="panel-section">
+          <div class="section-header">
+            <i data-lucide="sliders"></i>
+            <h2>Sheet Filters</h2>
+          </div>
+          <div class="panel-content">
+            <div class="form-group-sidebar">
+              <label for="filterSearch">Search Text</label>
+              <div class="search-input-wrapper">
+                <i data-lucide="search"></i>
+                <input type="text" id="filterSearch" placeholder="Type to filter...">
+              </div>
+            </div>
+            <div class="form-group-sidebar">
+              <label for="filterEvent">Event Name</label>
+              <select id="filterEvent">
+                <option value="">All Events</option>
+              </select>
+            </div>
+            <div class="form-group-sidebar">
+              <label for="filterAssignedTo">Assigned To</label>
+              <select id="filterAssignedTo">
+                <option value="">All Assignees</option>
+              </select>
+            </div>
+            <div class="form-group-sidebar">
+              <label for="filterPriority">Priority</label>
+              <select id="filterPriority">
+                <option value="">All Priorities</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+            <div class="form-group-sidebar">
+              <label for="filterStatus">Status</label>
+              <select id="filterStatus">
+                <option value="">All Statuses</option>
+                <option value="Not-Started">Not-Started</option>
+                <option value="In-Progress">In-Progress</option>
+                <option value="In-Review">In-Review</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+            <button class="btn btn-secondary btn-full" id="clearFiltersBtn">
+              <i data-lucide="rotate-ccw"></i> Clear Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 3: Shortcuts & Helpers -->
+        <div class="panel-section">
+          <div class="section-header">
+            <i data-lucide="clock"></i>
+            <h2>Time Logger</h2>
+          </div>
+          <div class="panel-content">
+            <button class="btn btn-primary btn-full" id="logManualTimeBtn" style="margin-bottom: 8px;">
+              <i data-lucide="plus-circle"></i> Log Time Manually
+            </button>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- CENTER COLUMN: MAIN WORKSPACE CANVAS -->
+      <main class="canvas-panel">
+        
+        <!-- Workspace Navigation Tabs (Same Studio Style) -->
+        <div class="canvas-tabs no-print">
+          <button class="nav-item active" data-tab="dashboard">
+            <i data-lucide="layout-dashboard"></i> Dashboard
+          </button>
+          <button class="nav-item" data-tab="grid">
+            <i data-lucide="table"></i> Excel Grid
+          </button>
+          <button class="nav-item" data-tab="kanban">
+            <i data-lucide="trello"></i> Kanban Board
+          </button>
+          <button class="nav-item" data-tab="timesheet">
+            <i data-lucide="clock"></i> Timesheets
+          </button>
+        </div>
+
+        <!-- Scrollable Viewport Frame -->
+        <div class="canvas-viewport">
+
+          <!-- ================= DASHBOARD TAB ================= -->
+          <section class="tab-content active" id="dashboardTab">
+            <div class="view-header">
+              <h2>Analytics Overview</h2>
+              <button class="btn btn-lime" id="dashboardAddTaskBtn">
+                <i data-lucide="plus"></i> Create Task
+              </button>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <div class="card-icon blue"><i data-lucide="check-circle"></i></div>
+                <div class="card-info">
+                  <h3>Completion Rate</h3>
+                  <div class="value" id="statCompletionRate">0%</div>
+                  <p id="statCompletedRatio">0 of 0 tasks</p>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="card-icon amber"><i data-lucide="clock"></i></div>
+                <div class="card-info">
+                  <h3>Hours Tracked Today</h3>
+                  <div class="value" id="statHoursToday">0h 0m</div>
+                  <p>Work hours log</p>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="card-icon purple"><i data-lucide="calendar"></i></div>
+                <div class="card-info">
+                  <h3>Total Hours (Week)</h3>
+                  <div class="value" id="statHoursWeek">0.0 hrs</div>
+                  <p>Last 7 days active</p>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="card-icon rose"><i data-lucide="alert-circle"></i></div>
+                <div class="card-info">
+                  <h3>High Priority Tasks</h3>
+                  <div class="value" id="statHighPriority">0</div>
+                  <p>Require immediate attention</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-row">
+              <div class="glass-card chart-card">
+                <h3>Team Workload (Tasks per Member)</h3>
+                <div class="chart-container">
+                  <canvas id="workloadChart"></canvas>
+                </div>
+              </div>
+              <div class="glass-card chart-card">
+                <h3>Time Distribution by Event</h3>
+                <div class="chart-container">
+                  <canvas id="categoryChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ================= EXCEL GRID TAB ================= -->
+          <section class="tab-content" id="gridTab">
+            <div class="view-header">
+              <h2>Excel-Inspired Task Sheet</h2>
+              <div class="header-actions-row">
+                <button class="btn btn-secondary" id="gridExportCsvBtn">
+                  <i data-lucide="download"></i> Export CSV
+                </button>
+                <button class="btn btn-lime" id="gridAddTaskBtn">
+                  <i data-lucide="plus"></i> Create Task
+                </button>
+              </div>
+            </div>
+
+            <!-- Data Grid Table -->
+            <div class="grid-table-container glass-card">
+              <table class="data-grid-table" id="tasksGridTable">
+                <thead>
+                  <tr>
+                    <th data-sort="event_name">Event Name <i data-lucide="arrow-up-down"></i></th>
+                    <th data-sort="description">Task Description <i data-lucide="arrow-up-down"></i></th>
+                    <th data-sort="assigned_by">Assigned By <i data-lucide="arrow-up-down"></i></th>
+                    <th data-sort="assigned_to">Assigned To <i data-lucide="arrow-up-down"></i></th>
+                    <th data-sort="assigned_date">Assigned Date <i data-lucide="arrow-up-down"></i></th>
+                    <th data-sort="deadline">Deadline <i data-lucide="arrow-up-down"></i></th>
+                    <th data-sort="status">Status <i data-lucide="arrow-up-down"></i></th>
+                    <th data-sort="priority">Priority <i data-lucide="arrow-up-down"></i></th>
+                    <th>Track Time</th>
+                    <th>Remarks/Notes</th>
+                    <th class="actions-col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tasksGridBody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- ================= KANBAN BOARD TAB ================= -->
+          <section class="tab-content" id="kanbanTab">
+            <div class="view-header">
+              <h2>Kanban Board</h2>
+              <button class="btn btn-lime" id="kanbanAddTaskBtn">
+                <i data-lucide="plus"></i> Create Task
+              </button>
+            </div>
+
+            <!-- Kanban Container -->
+            <div class="kanban-container">
+              <!-- Column Not-Started -->
+              <div class="kanban-column" data-status="Not-Started">
+                <div class="column-header">
+                  <span class="column-dot not-started-dot"></span>
+                  <h3>Not-Started</h3>
+                  <span class="card-count" id="countNotStarted">0</span>
+                </div>
+                <div class="kanban-cards-container" id="cardsNotStarted">
+                  <!-- Cards -->
+                </div>
+              </div>
+
+              <!-- Column In-Progress -->
+              <div class="kanban-column" data-status="In-Progress">
+                <div class="column-header">
+                  <span class="column-dot in-progress-dot"></span>
+                  <h3>In-Progress</h3>
+                  <span class="card-count" id="countInProgress">0</span>
+                </div>
+                <div class="kanban-cards-container" id="cardsInProgress">
+                  <!-- Cards -->
+                </div>
+              </div>
+
+              <!-- Column In-Review -->
+              <div class="kanban-column" data-status="In-Review">
+                <div class="column-header">
+                  <span class="column-dot in-review-dot"></span>
+                  <h3>In-Review</h3>
+                  <span class="card-count" id="countInReview">0</span>
+                </div>
+                <div class="kanban-cards-container" id="cardsInReview">
+                  <!-- Cards -->
+                </div>
+              </div>
+
+              <!-- Column Completed -->
+              <div class="kanban-column" data-status="Completed">
+                <div class="column-header">
+                  <span class="column-dot completed-dot"></span>
+                  <h3>Completed</h3>
+                  <span class="card-count" id="countCompleted">0</span>
+                </div>
+                <div class="kanban-cards-container" id="cardsCompleted">
+                  <!-- Cards -->
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ================= TIMESHEET LOG TAB ================= -->
+          <section class="tab-content" id="timesheetTab">
+            <div class="view-header">
+              <h2>Timesheets & Activity Logs</h2>
+              <button class="btn btn-secondary" id="timesheetExportCsvBtn">
+                <i data-lucide="download"></i> Export Log
+              </button>
+            </div>
+
+            <!-- Timesheet History Grid -->
+            <div class="timesheet-layout">
+              <div class="glass-card timesheet-list-card">
+                <h3>Recent Time Logs</h3>
+                <div class="time-logs-list" id="timesheetsHistoryList">
+                  <!-- Log Rows populate dynamically -->
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </main>
+
+      <!-- RIGHT COLUMN: LIVE WORKLOAD SUMMARY -->
+      <aside class="right-panel no-print">
+        <div class="panel-section">
+          <div class="section-header">
+            <i data-lucide="bar-chart-2"></i>
+            <h2>Count of Assigned To</h2>
+          </div>
+          <div class="panel-content">
+            <!-- Dynamic Excel Summary Table -->
+            <div class="excel-summary-container">
+              <table class="summary-table" id="assigneeSummaryTable">
+                <thead>
+                  <tr>
+                    <th>Assigned To</th>
+                    <th>Task Count</th>
+                    <th>Hours Spent</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Populated dynamically -->
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>Grand Total</th>
+                    <th id="summaryTotalTasks">0</th>
+                    <th id="summaryTotalHours">0.0h</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="section-header">
+            <i data-lucide="info"></i>
+            <h2>Operations Quick Facts</h2>
+          </div>
+          <div class="panel-content">
+            <ul class="quick-facts-list">
+              <li>High priority tasks should be addressed before their deadline dates to prevent delay.</li>
+              <li>Drag cards in the Kanban lane to update task status in the shared db.json file instantly.</li>
+              <li>Press "Start" on any task to trigger the stopwatch and automatically label it "In-Progress".</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- 3. BOTTOM STATUS BAR -->
+    <footer class="studio-status-bar no-print">
+      <div class="status-left">
+        <span class="status-indicator online"></span>
+        <span>JSON Database Connected</span>
+      </div>
+      <div class="status-right">
+        <span>Active User: <strong id="statusActiveUserText">Shafi</strong></span>
+        <span class="status-divider">|</span>
+        <span>V12.1 GENEROUS SPACING EDITION</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Create/Edit Task Modal -->
+  <div class="modal" id="taskModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="taskModalTitle">Create Task</h2>
+        <button class="modal-close" id="closeTaskModal"><i data-lucide="x"></i></button>
+      </div>
+      <form id="taskForm">
+        <input type="hidden" id="taskFormId">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskEventName">Event Name *</label>
+            <input type="text" id="taskEventName" placeholder="e.g. DFS: Dubai, UAE, 2-6 Nov" required list="eventListOptions">
+            <datalist id="eventListOptions">
+              <option value="Bespoke Events">
+              <option value="BSS: Bengaluru, India, Nov">
+              <option value="DFS: Dubai, UAE, 2-6 Nov">
+              <option value="DFFW: UAE, 2-6 Nov">
+              <option value="Others">
+            </datalist>
+          </div>
+          <div class="form-group">
+            <label for="taskDescription">Task Description *</label>
+            <input type="text" id="taskDescription" placeholder="e.g. Design event socials/banners" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskAssignedBy">Assigned By</label>
+            <input type="text" id="taskAssignedBy" placeholder="e.g. Samprity" list="userListOptions">
+          </div>
+          <div class="form-group">
+            <label for="taskAssignedTo">Assigned To *</label>
+            <input type="text" id="taskAssignedTo" placeholder="e.g. Shafi" required list="userListOptions">
+            <datalist id="userListOptions">
+              <!-- Dynamically filled users -->
+            </datalist>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskAssignedDate">Assigned Date</label>
+            <input type="date" id="taskAssignedDate">
+          </div>
+          <div class="form-group">
+            <label for="taskDeadline">Deadline</label>
+            <input type="date" id="taskDeadline">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskStatus">Status</label>
+            <select id="taskStatus">
+              <option value="Not-Started">Not-Started</option>
+              <option value="In-Progress">In-Progress</option>
+              <option value="In-Review">In-Review</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="taskPriority">Priority</label>
+            <select id="taskPriority">
+              <option value="High">High</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="taskRemarks">Remarks/Notes</label>
+          <textarea id="taskRemarks" rows="3" placeholder="Enter remarks or design guidelines..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelTaskModal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveTaskSubmitBtn">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Manual Time Entry Modal -->
+  <div class="modal" id="manualTimeModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Log Time Manually</h2>
+        <button class="modal-close" id="closeManualTimeModal"><i data-lucide="x"></i></button>
+      </div>
+      <form id="manualTimeForm">
+        <div class="form-group">
+          <label for="manualTimeTaskId">Link to Task (Optional)</label>
+          <select id="manualTimeTaskId">
+            <option value="">No Associated Task</option>
+            <!-- Filled dynamically -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="manualTimeDesc">Work Done / Description *</label>
+          <input type="text" id="manualTimeDesc" placeholder="e.g. Worked on layout banners layout design" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="manualTimeCategory">Category</label>
+            <select id="manualTimeCategory">
+              <option value="Design" selected>Design</option>
+              <option value="Development">Development</option>
+              <option value="Meeting">Meeting</option>
+              <option value="Research">Research</option>
+              <option value="Review">Review</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="manualTimeDate">Date *</label>
+            <input type="date" id="manualTimeDate" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="manualTimeStart">Start Time *</label>
+            <input type="time" id="manualTimeStart" required>
+          </div>
+          <div class="form-group">
+            <label for="manualTimeEnd">End Time *</label>
+            <input type="time" id="manualTimeEnd" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelManualTimeModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add User Profile Modal -->
+  <div class="modal" id="addUserModal">
+    <div class="modal-content small-modal">
+      <div class="modal-header">
+        <h2>Add User Profile</h2>
+        <button class="modal-close" id="closeAddUserModal"><i data-lucide="x"></i></button>
+      </div>
+      <form id="addUserForm">
+        <div class="form-group">
+          <label for="newProfileName">Full Name *</label>
+          <input type="text" id="newProfileName" placeholder="e.g. Sajeesh" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelAddUserModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Member</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Set Goal Modal -->
+  <div class="modal" id="goalModal">
+    <div class="modal-content small-modal">
+      <div class="modal-header">
+        <h2>Set Daily Hours Goal</h2>
+        <button class="modal-close" id="closeGoalModal"><i data-lucide="x"></i></button>
+      </div>
+      <form id="goalForm">
+        <div class="form-group">
+          <label for="dailyGoalHours">Hours per Day</label>
+          <input type="number" id="dailyGoalHours" min="1" max="24" step="0.5" value="8" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelGoalModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Goal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
