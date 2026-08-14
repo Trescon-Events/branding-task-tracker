@@ -3,7 +3,7 @@ let state = {
   tasks: [],
   timesheets: [],
   users: ['Nazim', 'Waseem S', 'Sajeesh Kombath', 'Krishanu Karmakar', 'Lohith BC', 'Kalander Shafi', 'Monith', 'Imran', 'Utkarsh', 'Rovie', 'Samprity'],
-  currentUser: 'Kalander Shafi',
+  currentUser: '',
   dailyGoalHours: 8,
   activeTimer: {
     taskId: null,
@@ -470,6 +470,10 @@ function saveTimerToStorage() {
 }
 
 function startTimer(taskId, taskDescription) {
+  if (!state.currentUser) {
+    alert('Please select your user profile in the top-right header dropdown before tracking time.');
+    return;
+  }
   // If another timer is running, stop it first
   if (state.activeTimer.isRunning && state.activeTimer.taskId !== taskId) {
     stopTimer(true); // Save current running
@@ -1133,6 +1137,14 @@ function populateUserDropdowns() {
   // Current user header selector
   const headerSelect = document.getElementById('currentUserSelect');
   headerSelect.innerHTML = '';
+  
+  // Add placeholder
+  const placeholderOpt = document.createElement('option');
+  placeholderOpt.value = '';
+  placeholderOpt.textContent = 'Select Profile...';
+  if (!state.currentUser) placeholderOpt.selected = true;
+  headerSelect.appendChild(placeholderOpt);
+
   state.users.forEach(user => {
     const opt = document.createElement('option');
     opt.value = user;
@@ -1153,7 +1165,13 @@ function populateUserDropdowns() {
   // Update status bar active user indicator
   const statusActiveUser = document.getElementById('statusActiveUserText');
   if (statusActiveUser) {
-    statusActiveUser.textContent = state.currentUser;
+    if (state.currentUser) {
+      statusActiveUser.textContent = state.currentUser;
+      statusActiveUser.style.color = '';
+    } else {
+      statusActiveUser.textContent = 'None Selected (Please select profile)';
+      statusActiveUser.style.color = '#f59e0b'; // warning color
+    }
   }
 }
 
@@ -1276,6 +1294,10 @@ function closeTaskModal() {
 }
 
 function openManualTimeModal() {
+  if (!state.currentUser) {
+    alert('Please select your user profile in the top-right header dropdown before logging time.');
+    return;
+  }
   const modal = document.getElementById('manualTimeModal');
   const form = document.getElementById('manualTimeForm');
   form.reset();
