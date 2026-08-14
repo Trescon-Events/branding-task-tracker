@@ -2,8 +2,8 @@
 let state = {
   tasks: [],
   timesheets: [],
-  users: ['Sajeesh', 'Shafi', 'Monith', 'Imran', 'Utkarsh', 'Rovie', 'Samprity'],
-  currentUser: 'Shafi',
+  users: ['Nazim', 'Waseem S', 'Sajeesh Kombath', 'Krishanu Karmakar', 'Lohith BC', 'Kalander Shafi', 'Monith', 'Imran', 'Utkarsh', 'Rovie', 'Samprity'],
+  currentUser: 'Kalander Shafi',
   dailyGoalHours: 8,
   activeTimer: {
     taskId: null,
@@ -34,7 +34,7 @@ const defaultOfflineTasks = [
     event_name: "Bespoke Events",
     description: "Zoom - LP",
     assigned_by: "Monith",
-    assigned_to: "Sajeesh",
+    assigned_to: "Sajeesh Kombath",
     assigned_date: "2026-04-27",
     deadline: "2026-04-30",
     status: "In-Progress",
@@ -47,7 +47,7 @@ const defaultOfflineTasks = [
     event_name: "BSS: Bengaluru, India, Nov",
     description: "PR banner",
     assigned_by: "Imran",
-    assigned_to: "Sajeesh",
+    assigned_to: "Sajeesh Kombath",
     assigned_date: "2026-04-28",
     deadline: "2026-04-30",
     status: "Not-Started",
@@ -60,7 +60,7 @@ const defaultOfflineTasks = [
     event_name: "Others",
     description: "WAIS Malaysia - website",
     assigned_by: "Utkarsh",
-    assigned_to: "Sajeesh",
+    assigned_to: "Sajeesh Kombath",
     assigned_date: "2026-04-29",
     deadline: "2026-05-04",
     status: "Not-Started",
@@ -73,7 +73,7 @@ const defaultOfflineTasks = [
     event_name: "DFS: Dubai, UAE, 2-6 Nov",
     description: "Event Guideline",
     assigned_by: "Rovie",
-    assigned_to: "Shafi",
+    assigned_to: "Kalander Shafi",
     assigned_date: "2026-05-04",
     deadline: "2026-05-06",
     status: "In-Progress",
@@ -86,7 +86,7 @@ const defaultOfflineTasks = [
     event_name: "Others",
     description: "Event Logos",
     assigned_by: "Rovie",
-    assigned_to: "Shafi",
+    assigned_to: "Kalander Shafi",
     assigned_date: "2026-05-08",
     deadline: "2026-05-15",
     status: "In-Progress",
@@ -99,7 +99,7 @@ const defaultOfflineTasks = [
     event_name: "DFS: Dubai, UAE, 2-6 Nov",
     description: "New Floorplan",
     assigned_by: "",
-    assigned_to: "Shafi",
+    assigned_to: "Kalander Shafi",
     assigned_date: "2026-06-24",
     deadline: "2026-07-03",
     status: "In-Progress",
@@ -112,7 +112,7 @@ const defaultOfflineTasks = [
     event_name: "DFS: Dubai, UAE, 2-6 Nov",
     description: "Socials",
     assigned_by: "Samprity",
-    assigned_to: "Shafi",
+    assigned_to: "Kalander Shafi",
     assigned_date: "2026-06-26",
     deadline: "2026-07-10",
     status: "Not-Started",
@@ -125,7 +125,7 @@ const defaultOfflineTasks = [
     event_name: "DFS: Dubai, UAE, 2-6 Nov",
     description: "Media banners",
     assigned_by: "Samprity",
-    assigned_to: "Shafi",
+    assigned_to: "Kalander Shafi",
     assigned_date: "2026-06-26",
     deadline: "2026-07-17",
     status: "In-Progress",
@@ -138,7 +138,7 @@ const defaultOfflineTasks = [
     event_name: "DFFW: UAE, 2-6 Nov",
     description: "Banners",
     assigned_by: "Samprity",
-    assigned_to: "Shafi",
+    assigned_to: "Kalander Shafi",
     assigned_date: "2026-06-29",
     deadline: "2026-07-17",
     status: "Not-Started",
@@ -151,10 +151,10 @@ const defaultOfflineTasks = [
     event_name: "DFFW: UAE, 2-6 Nov",
     description: "Socials",
     assigned_by: "Samprity",
-    assigned_to: "Shafi",
+    assigned_to: "Kalander Shafi",
     assigned_date: "2026-06-29",
     deadline: "2026-07-24",
-    status: "Not-Started",
+    status: "In-Progress",
     priority: "High",
     remarks: "",
     tracked_seconds: 0
@@ -206,7 +206,7 @@ async function apiGet(url) {
 
   // Fallback Logic
   if (url === '/api/users') {
-    const standardUsers = ['Sajeesh', 'Shafi', 'Monith', 'Imran', 'Utkarsh', 'Rovie', 'Samprity'];
+    const standardUsers = ['Nazim', 'Waseem S', 'Sajeesh Kombath', 'Krishanu Karmakar', 'Lohith BC', 'Kalander Shafi', 'Monith', 'Imran', 'Utkarsh', 'Rovie', 'Samprity'];
     const tasks = JSON.parse(localStorage.getItem('studio_tasks') || '[]');
     const dbUsers = [];
     tasks.forEach(t => {
@@ -819,6 +819,8 @@ function renderGrid() {
   const searchQuery = document.getElementById('filterSearch').value.toLowerCase();
   const eventFilter = document.getElementById('filterEvent').value;
   const assigneeFilter = document.getElementById('filterAssignedTo').value;
+  const assignerSelectEl = document.getElementById('filterAssignedBy');
+  const assignerFilter = assignerSelectEl ? assignerSelectEl.value : '';
   const priorityFilter = document.getElementById('filterPriority').value;
   const statusFilter = document.getElementById('filterStatus').value;
 
@@ -831,10 +833,11 @@ function renderGrid() {
     
     const eventMatch = !eventFilter || task.event_name === eventFilter;
     const assigneeMatch = !assigneeFilter || task.assigned_to === assigneeFilter;
+    const assignerMatch = !assignerFilter || task.assigned_by === assignerFilter;
     const priorityMatch = !priorityFilter || task.priority === priorityFilter;
     const statusMatch = !statusFilter || task.status === statusFilter;
 
-    return textMatch && eventMatch && assigneeMatch && priorityMatch && statusMatch;
+    return textMatch && eventMatch && assigneeMatch && assignerMatch && priorityMatch && statusMatch;
   });
 
   // Sort tasks
@@ -1158,10 +1161,14 @@ function populateUserDropdowns() {
 function populateEventDropdownOptions() {
   const eventSelect = document.getElementById('filterEvent');
   const assigneeSelect = document.getElementById('filterAssignedTo');
+  const assignerSelect = document.getElementById('filterAssignedBy');
   
   // Clear but keep first
   eventSelect.innerHTML = '<option value="">All Events</option>';
   assigneeSelect.innerHTML = '<option value="">All Assignees</option>';
+  if (assignerSelect) {
+    assignerSelect.innerHTML = '<option value="">All Assigners</option>';
+  }
 
   // Unique Events
   const events = Array.from(new Set(state.tasks.map(t => t.event_name).filter(Boolean)));
@@ -1172,12 +1179,19 @@ function populateEventDropdownOptions() {
     eventSelect.appendChild(opt);
   });
 
-  // Assignees
+  // Assignees & Assigners
   state.users.forEach(user => {
     const opt = document.createElement('option');
     opt.value = user;
     opt.textContent = user;
     assigneeSelect.appendChild(opt);
+    
+    if (assignerSelect) {
+      const opt2 = document.createElement('option');
+      opt2.value = user;
+      opt2.textContent = user;
+      assignerSelect.appendChild(opt2);
+    }
   });
 }
 
@@ -1459,10 +1473,13 @@ function setupEventListeners() {
   });
 
   // Grid Filters Event Bindings
-  const filterInputs = ['filterSearch', 'filterEvent', 'filterAssignedTo', 'filterPriority', 'filterStatus'];
+  const filterInputs = ['filterSearch', 'filterEvent', 'filterAssignedTo', 'filterAssignedBy', 'filterPriority', 'filterStatus'];
   filterInputs.forEach(id => {
-    document.getElementById(id).addEventListener('input', renderGrid);
-    document.getElementById(id).addEventListener('change', renderGrid);
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', renderGrid);
+      el.addEventListener('change', renderGrid);
+    }
   });
 
   // Clear Filters
@@ -1470,6 +1487,8 @@ function setupEventListeners() {
     document.getElementById('filterSearch').value = '';
     document.getElementById('filterEvent').value = '';
     document.getElementById('filterAssignedTo').value = '';
+    const assignerEl = document.getElementById('filterAssignedBy');
+    if (assignerEl) assignerEl.value = '';
     document.getElementById('filterPriority').value = '';
     document.getElementById('filterStatus').value = '';
     renderGrid();

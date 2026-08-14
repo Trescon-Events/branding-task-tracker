@@ -17,7 +17,7 @@ const initialTasks = [
     event_name: "Bespoke Events",
     description: "Zoom - LP",
     assigned_by: "Monith",
-    assigned_to: "Sajeesh",
+    assigned_to: "Sajeesh Kombath",
     assigned_date: "2026-04-27",
     deadline: "2026-04-30",
     status: "In-Progress",
@@ -30,7 +30,7 @@ const initialTasks = [
     event_name: "BSS: Bengaluru, India, Nov",
     description: "PR banner",
     assigned_by: "Imran",
-    assigned_to: "Sajeesh",
+    assigned_to: "Sajeesh Kombath",
     assigned_date: "2026-04-28",
     deadline: "2026-04-30",
     status: "Not-Started",
@@ -43,7 +43,7 @@ const initialTasks = [
     event_name: "Others",
     description: "WAIS Malaysia - website",
     assigned_by: "Utkarsh",
-    assigned_to: "Sajeesh",
+    assigned_to: "Sajeesh Kombath",
     assigned_date: "2026-04-29",
     deadline: "2026-05-04",
     status: "Not-Started",
@@ -56,7 +56,7 @@ const initialTasks = [
     event_name: "DFS: Dubai, UAE, 2-6 Nov",
     description: "Event Guideline",
     assigned_by: "Rovie",
-    assigned_to: "Shafi",
+    assigned_to: "Kalander Shafi",
     assigned_date: "2026-05-04",
     deadline: "2026-05-06",
     status: "In-Progress",
@@ -69,7 +69,7 @@ const initialTasks = [
     event_name: "Others",
     description: "Event Logos",
     assigned_by: "Rovie",
-    assigned_to: "Shafi",
+    assigned_to: "Kalander Shafi",
     assigned_date: "2026-05-08",
     deadline: "2026-05-15",
     status: "In-Progress",
@@ -82,7 +82,7 @@ const initialTasks = [
     event_name: "DFS: Dubai, UAE, 2-6 Nov",
     description: "New Floorplan",
     assigned_by: "",
-    assigned_to: "Shafi",
+    assigned_to: "Kalander Shafi",
     assigned_date: "2026-06-24",
     deadline: "2026-07-03",
     status: "In-Progress",
@@ -95,7 +95,7 @@ const initialTasks = [
     event_name: "DFS: Dubai, UAE, 2-6 Nov",
     description: "Socials",
     assigned_by: "Samprity",
-    assigned_to: "Shafi",
+    assigned_to: "Kalander Shafi",
     assigned_date: "2026-06-26",
     deadline: "2026-07-10",
     status: "Not-Started",
@@ -108,7 +108,7 @@ const initialTasks = [
     event_name: "DFS: Dubai, UAE, 2-6 Nov",
     description: "Media banners",
     assigned_by: "Samprity",
-    assigned_to: "Shafi",
+    assigned_to: "Kalander Shafi",
     assigned_date: "2026-06-26",
     deadline: "2026-07-17",
     status: "In-Progress",
@@ -121,7 +121,7 @@ const initialTasks = [
     event_name: "DFFW: UAE, 2-6 Nov",
     description: "Banners",
     assigned_by: "Samprity",
-    assigned_to: "Shafi",
+    assigned_to: "Kalander Shafi",
     assigned_date: "2026-06-29",
     deadline: "2026-07-17",
     status: "Not-Started",
@@ -134,7 +134,7 @@ const initialTasks = [
     event_name: "DFFW: UAE, 2-6 Nov",
     description: "Socials",
     assigned_by: "Samprity",
-    assigned_to: "Shafi",
+    assigned_to: "Kalander Shafi",
     assigned_date: "2026-06-29",
     deadline: "2026-07-24",
     status: "Not-Started",
@@ -324,7 +324,7 @@ app.delete('/api/timesheets/:id', (req, res) => {
 
 // --- User List Route ---
 app.get('/api/users', (req, res) => {
-  const standardUsers = ['Sajeesh', 'Shafi', 'Monith', 'Imran', 'Utkarsh', 'Rovie', 'Samprity'];
+  const standardUsers = ['Nazim', 'Waseem S', 'Sajeesh Kombath', 'Krishanu Karmakar', 'Lohith BC', 'Kalander Shafi', 'Monith', 'Imran', 'Utkarsh', 'Rovie', 'Samprity'];
   const db = getDb();
   
   // Extract any custom users from tasks
