@@ -215,7 +215,7 @@ body::after {
 
 /* Active Timer Header Widget */
 .active-timer-widget {
-  display: flex;
+  display: none !important;
   align-items: center;
   gap: 12px;
   background: rgba(13, 18, 25, 0.8);

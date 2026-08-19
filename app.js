@@ -897,14 +897,6 @@ function renderGrid() {
       <td>
         <span class="priority-badge ${task.priority.toLowerCase()}">${task.priority}</span>
       </td>
-      <td>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <button class="${timerBtnClass}" data-id="${task.id}" data-desc="${task.description}">
-            <i data-lucide="${timerIcon}"></i> ${timerBtnText}
-          </button>
-          <span style="font-family: monospace; font-size: 11px;">${formatDuration(task.tracked_seconds || 0)}</span>
-        </div>
-      </td>
       <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${task.remarks || ''}">
         ${task.remarks || '-'}
       </td>
@@ -1098,20 +1090,6 @@ function setupGridActions() {
     });
   });
 
-  // Start / Stop timers from grid row buttons
-  document.querySelectorAll('.grid-timer-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const id = parseInt(btn.dataset.id);
-      const desc = btn.dataset.desc;
-
-      if (state.activeTimer.taskId === id && state.activeTimer.isRunning) {
-        stopTimer(true);
-      } else {
-        startTimer(id, desc);
-      }
-    });
-  });
 
   // Edit action
   document.querySelectorAll('.data-grid-table .edit-btn').forEach(btn => {
