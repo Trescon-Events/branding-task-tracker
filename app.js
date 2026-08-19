@@ -881,10 +881,22 @@ function renderGrid() {
     const deadlineDate = task.deadline ? formatDateString(task.deadline) : '-';
     const assignedDate = task.assigned_date ? formatDateString(task.assigned_date) : '-';
 
+    let assignedByCell = '-';
+    if (task.assigned_by) {
+      assignedByCell = `
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+          <span>${task.assigned_by}</span>
+          <button class="action-icon-btn followup-btn" data-id="${task.id}" title="Follow-up with Assigner" style="padding: 2px; display: inline-flex;">
+            <i data-lucide="message-square-plus" style="width: 12px; height: 12px; color: var(--accent-color);"></i>
+          </button>
+        </div>
+      `;
+    }
+
     tr.innerHTML = `
       <td><strong>${task.event_name || 'Others'}</strong></td>
       <td>${task.description || ''}</td>
-      <td>${task.assigned_by || '-'}</td>
+      <td>${assignedByCell}</td>
       <td>${task.assigned_to || '-'}</td>
       <td>${assignedDate}</td>
       <td class="${isOverdue(task) ? 'card-due overdue' : ''}">${deadlineDate}</td>
@@ -1100,6 +1112,15 @@ function setupGridActions() {
     });
   });
 
+  // Follow-up action
+  document.querySelectorAll('.data-grid-table .followup-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = parseInt(btn.dataset.id);
+      openFollowupModal(id);
+    });
+  });
+
   // Delete action
   document.querySelectorAll('.data-grid-table .delete-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -1233,6 +1254,51 @@ function isOverdue(task) {
 }
 
 // ================= MODAL CONTROLLERS =================
+
+const userEmails = {
+  'Nazim': 'nazim@tresconglobal.com',
+  'Waseem S': 'waseem@tresconglobal.com',
+  'Sajeesh Kombath': 'sajeesh@tresconglobal.com',
+  'Krishanu Karmakar': 'Krishanu@tresconglobal.com',
+  'Lohith BC': 'lohith@tresconglobal.com',
+  'Kalander Shafi': 'Kalander@tresconglobal.com',
+  'Monith': 'monith@tresconglobal.com',
+  'Imran': 'imran@tresconglobal.com',
+  'Utkarsh': 'utkarsh@tresconglobal.com',
+  'Rovie': 'rovie@tresconglobal.com',
+  'Samprity': 'samprity@tresconglobal.com'
+};
+
+function openFollowupModal(taskId) {
+  const task = state.tasks.find(t => t.id === taskId);
+  if (!task || !task.assigned_by) return;
+
+  const email = userEmails[task.assigned_by] || `${task.assigned_by.toLowerCase().replace(/\\s+/g, '')}@tresconglobal.com`;
+
+  document.getElementById('followupTaskDetails').innerHTML = `
+    <strong>Event:</strong> ${task.event_name || 'Others'}<br>
+    <strong>Task:</strong> ${task.description}<br>
+    <strong>Current Status:</strong> ${task.status}
+  `;
+  document.getElementById('followupAssignerEmail').value = email;
+
+  // Format Teams Link
+  const teamsMessage = `Hi, I am following up regarding the task "${task.description}" for the event "${task.event_name || 'Others'}". Status: ${task.status}.`;
+  const teamsLink = `https://teams.microsoft.com/l/chat/0/0?users=${email}&message=${encodeURIComponent(teamsMessage)}`;
+  document.getElementById('followupTeamsLink').setAttribute('href', teamsLink);
+
+  // Format Email Link
+  const emailSubject = `Follow-up: [${task.event_name || 'Others'}] ${task.description}`;
+  const emailBody = `Hi ${task.assigned_by},\n\nI'm following up on the task: "${task.description}" for the event "${task.event_name || 'Others'}".\n\nStatus: ${task.status}\n\nBest regards,\n${state.currentUser || 'Team Member'}`;
+  const emailLink = `mailto:${email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+  document.getElementById('followupEmailLink').setAttribute('href', emailLink);
+
+  document.getElementById('followupModal').classList.add('show');
+}
+
+function closeFollowupModal() {
+  document.getElementById('followupModal').classList.remove('show');
+}
 
 function openTaskModal(taskId = null) {
   const modal = document.getElementById('taskModal');
@@ -1471,6 +1537,9 @@ function setupEventListeners() {
     document.getElementById('goalModal').classList.remove('show');
     renderCurrentTab();
   });
+
+  // Follow-up Modal close
+  document.getElementById('closeFollowupModal').addEventListener('click', closeFollowupModal);
 
   // Grid Filters Event Bindings
   const filterInputs = ['filterSearch', 'filterEvent', 'filterAssignedTo', 'filterAssignedBy', 'filterPriority', 'filterStatus'];
