@@ -324,7 +324,7 @@ app.delete('/api/timesheets/:id', (req, res) => {
 
 // --- User List Route ---
 app.get('/api/users', (req, res) => {
-  const standardUsers = ['Khalifa', 'Nazim', 'Waseem S', 'Sajeesh Kombath', 'Krishanu Karmakar', 'Lohith BC', 'Kalander Shafi', 'Monith', 'Imran', 'Utkarsh', 'Rovie', 'Samprity'];
+  const standardUsers = ['Nazim', 'Waseem S', 'Sajeesh Kombath', 'Krishanu Karmakar', 'Lohith BC', 'Kalander Shafi', 'Monith', 'Imran', 'Utkarsh', 'Rovie', 'Samprity'];
   const db = getDb();
   
   // Extract any custom users from tasks
