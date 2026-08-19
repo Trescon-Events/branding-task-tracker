@@ -2,8 +2,8 @@
 let state = {
   tasks: [],
   timesheets: [],
-  users: ['Nazim', 'Waseem S', 'Sajeesh Kombath', 'Krishanu Karmakar', 'Lohith BC', 'Kalander Shafi', 'Monith', 'Imran', 'Utkarsh', 'Rovie', 'Samprity'],
-  currentUser: '',
+  users: ['Khalifa', 'Nazim', 'Waseem S', 'Sajeesh Kombath', 'Krishanu Karmakar', 'Lohith BC', 'Kalander Shafi', 'Monith', 'Imran', 'Utkarsh', 'Rovie', 'Samprity'],
+  currentUser: 'Khalifa',
   dailyGoalHours: 8,
   activeTimer: {
     taskId: null,
@@ -206,7 +206,7 @@ async function apiGet(url) {
 
   // Fallback Logic
   if (url === '/api/users') {
-    const standardUsers = ['Nazim', 'Waseem S', 'Sajeesh Kombath', 'Krishanu Karmakar', 'Lohith BC', 'Kalander Shafi', 'Monith', 'Imran', 'Utkarsh', 'Rovie', 'Samprity'];
+    const standardUsers = ['Khalifa', 'Nazim', 'Waseem S', 'Sajeesh Kombath', 'Krishanu Karmakar', 'Lohith BC', 'Kalander Shafi', 'Monith', 'Imran', 'Utkarsh', 'Rovie', 'Samprity'];
     const tasks = JSON.parse(localStorage.getItem('studio_tasks') || '[]');
     const dbUsers = [];
     tasks.forEach(t => {
@@ -1256,6 +1256,7 @@ function isOverdue(task) {
 // ================= MODAL CONTROLLERS =================
 
 const userEmails = {
+  'Khalifa': 'khalifa@tresconglobal.com',
   'Nazim': 'nazim@tresconglobal.com',
   'Waseem S': 'waseem@tresconglobal.com',
   'Sajeesh Kombath': 'sajeesh@tresconglobal.com',
